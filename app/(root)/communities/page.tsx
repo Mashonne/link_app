@@ -1,63 +1,64 @@
 import { currentUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import Image from 'next/image';
 
-import { fetchUser, fetchUsers } from "@/lib/actions/user.actions";
-import ProfileHeader from "@/components/shared/profile-header";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { profileTabs } from "@/constants";
-import ThreadsTab from "@/components/shared/threads-tab";
-import UserCard from "@/components/cards/user-card";
-import { fetchCommunities } from "@/lib/actions/community.actions";
+import Searchbar from "@/components/shared/search-bar";
+import Pagination from "@/components/shared/pagination";
 import CommunityCard from "@/components/cards/community-card";
+import { fetchUser } from "@/lib/actions/user.actions";
+import { fetchCommunities } from "@/lib/actions/community.actions";
 
-async function Page() {
-    const user = await currentUser();
+async function Page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) {
+  const user = await currentUser();
+  if (!user) return null;
 
-    if (!user) return null;
+  const userInfo = await fetchUser(user.id);
+  if (!userInfo?.onboarded) redirect("/onboarding");
 
-    const userInfo = await fetchUser(user.id);
+  const result = await fetchCommunities({
+    searchString: searchParams.q,
+    pageNumber: searchParams?.page ? +searchParams.page : 1,
+    pageSize: 25,
+  });
 
-    if (!userInfo?.onboarded) {
-        redirect('/onboarding');
-    }
+  return (
+    <>
+      <h1 className='head-text'>Communities</h1>
 
-    // Fetch Communities
-    const result = await fetchCommunities({
-        searchString: '',
-        pageNumber: 1,
-        pageSize: 25,
-    });
+      <div className='mt-5'>
+        <Searchbar routeType='communities' />
+      </div>
 
-    return ( 
-        <section>
-            <h1 className="head-text mb-10">
-                Search
-            </h1>
+      <section className='mt-9 flex flex-wrap gap-4'>
+        {result.communities.length === 0 ? (
+          <p className='no-result'>No Result</p>
+        ) : (
+          <>
+            {result.communities.map((community) => (
+              <CommunityCard
+                key={community.id}
+                id={community.id}
+                name={community.name}
+                username={community.username}
+                imgUrl={community.image}
+                bio={community.bio}
+                members={community.members}
+              />
+            ))}
+          </>
+        )}
+      </section>
 
-            {/* Search Bar */}
-            
-            <div className="mt-14 flex flex-col gap-9">
-                {result.communities.length === 0 ? (
-                    <p className="no-result">No communities</p>
-                ) : (
-                    <>
-                        {result.communities.map((community) => (
-                            <CommunityCard 
-                                key={community.id}
-                                id={community.id}
-                                name={community.name}
-                                username={community.username}
-                                imgUrl={community.image}
-                                bio={community.bio}
-                                members={community.members}
-                            />
-                        ))}
-                    </>
-                )}
-            </div>
-        </section>
-     );
+      <Pagination
+        path='communities'
+        pageNumber={searchParams?.page ? +searchParams.page : 1}
+        isNext={result.isNext}
+      />
+    </>
+  );
 }
- 
+
 export default Page;
