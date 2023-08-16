@@ -92,11 +92,11 @@ const PostThread: React.FC<PostThreadProps> = ({ userId }) => {
               width={24}
               color="#ffffff"
               wrapperStyle={{}}
-              wrapperClass=""
+              wrapperClass="font-semibold"
               visible={true}
               ariaLabel="oval-loading"
               secondaryColor="#ffffff"
-              strokeWidth={2}
+              strokeWidth={4}
               strokeWidthSecondary={2}
             />
           ) : (
