@@ -96,8 +96,8 @@ const PostThread: React.FC<PostThreadProps> = ({ userId }) => {
               visible={true}
               ariaLabel="oval-loading"
               secondaryColor="#ffffff"
-              strokeWidth={4}
-              strokeWidthSecondary={2}
+              strokeWidth={5}
+              strokeWidthSecondary={5}
             />
           ) : (
             "Post Threads"
