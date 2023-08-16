@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { usePathname, useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useOrganization } from "@clerk/nextjs";
+import { Oval } from "react-loader-spinner";
 
 import {
   Form,
@@ -19,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { ThreadValidation } from "@/lib/validations/thread";
 import { createThread } from "@/lib/actions/thread.actions";
+import { useState } from "react";
 
 interface AccountProfileProps {
   user: {
@@ -40,6 +42,7 @@ const PostThread: React.FC<PostThreadProps> = ({ userId }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { organization } = useOrganization();
+  const [loading, setLoading] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(ThreadValidation),
@@ -50,14 +53,15 @@ const PostThread: React.FC<PostThreadProps> = ({ userId }) => {
   });
 
   const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
+    setLoading(true);
     await createThread({
-        text: values.thread,
-        author: userId,
-        communityId: organization ? organization.id : null, 
-        path: pathname
-    })
-
-    router.push("/")
+      text: values.thread,
+      author: userId,
+      communityId: organization ? organization.id : null,
+      path: pathname,
+    });
+    setLoading(false);
+    router.push("/");
   };
 
   return (
@@ -82,7 +86,22 @@ const PostThread: React.FC<PostThreadProps> = ({ userId }) => {
           )}
         />
         <Button type="submit" className="bg-primary-500">
-            Post Threads
+          {loading ? (
+            <Oval
+              height={24}
+              width={24}
+              color="#ffffff"
+              wrapperStyle={{}}
+              wrapperClass=""
+              visible={true}
+              ariaLabel="oval-loading"
+              secondaryColor="#ffffff"
+              strokeWidth={2}
+              strokeWidthSecondary={2}
+            />
+          ) : (
+            "Post Threads"
+          )}
         </Button>
       </form>
     </Form>
