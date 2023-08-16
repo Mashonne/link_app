@@ -1,7 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from "react";
+import { AiOutlineHeart, AiFillHeart, AiOutlineMessage } from "react-icons/ai";
+import { BiRepost } from "react-icons/bi";
+import { TbShare3 } from "react-icons/tb";
+//
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/delete-thread";
+import LikeButton from "../shared/like-button";
 
 interface ThreadCardProps {
   id: string;
@@ -38,6 +44,13 @@ const ThreadCard: React.FC<ThreadCardProps> = ({
   comments,
   isComment,
 }) => {
+
+  let liked = false;
+
+  const setLiked = () => {
+    liked = !liked;
+  }
+
   return (
     <article
       className={`flex w-full flex-col rounded-xl ${
@@ -69,35 +82,20 @@ const ThreadCard: React.FC<ThreadCardProps> = ({
 
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
               <div className="flex gap-3 5">
-                <Image
-                  src="/assets/heart-gray.svg"
-                  alt="heart"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
-                />
+                <LikeButton id={id} />
                 <Link href={`/thread/${id}`}>
-                  <Image
-                    src="/assets/reply.svg"
-                    alt="reply"
-                    width={24}
-                    height={24}
-                    className="cursor-pointer object-contain"
+                  <AiOutlineMessage
+                    size={18}
+                    className="cursor-pointer text-neutral-500"
                   />
                 </Link>
-                <Image
-                  src="/assets/repost.svg"
-                  alt="repost"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
-                />
-                <Image
-                  src="/assets/share.svg"
-                  alt="share"
-                  width={24}
-                  height={24}
-                  className="cursor-pointer object-contain"
+                <BiRepost
+                  size={20}
+                  className="cursor-pointer text-neutral-500"
+                />    
+               <TbShare3
+                  size={19}
+                  className="cursor-pointer text-neutral-500"
                 />
               </div>
 
@@ -120,9 +118,8 @@ const ThreadCard: React.FC<ThreadCardProps> = ({
           parentId={parentId}
           isComment={isComment}
         />
-      
       </div>
-       {/* TODO: Show comment logos */}
+      {/* TODO: Show comment logos */}
       {!isComment && comments.length > 0 && (
         <div className="ml-1 mt-3 flex items-center gap-2">
           {comments.slice(0, 2).map((comment, index) => (
