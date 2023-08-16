@@ -8,7 +8,8 @@ import { TbShare3 } from "react-icons/tb";
 import { formatDateString } from "@/lib/utils";
 import DeleteThread from "../forms/delete-thread";
 import LikeButton from "../shared/like-button";
-
+import { isThreadLikedByUser } from "@/lib/actions/thread.actions";
+ 
 interface ThreadCardProps {
   id: string;
   currentUserId: string;
@@ -33,7 +34,7 @@ interface ThreadCardProps {
   isComment?: boolean;
 }
 
-const ThreadCard: React.FC<ThreadCardProps> = ({
+const ThreadCard: React.FC<ThreadCardProps> = async ({
   id,
   currentUserId,
   parentId,
@@ -45,11 +46,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({
   isComment,
 }) => {
 
-  let liked = false;
-
-  const setLiked = () => {
-    liked = !liked;
-  }
+  const isLiked = await isThreadLikedByUser(id, currentUserId);
 
   return (
     <article
@@ -82,7 +79,7 @@ const ThreadCard: React.FC<ThreadCardProps> = ({
 
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
               <div className="flex gap-3 5">
-                <LikeButton id={id} />
+                <LikeButton id={id} userId={currentUserId} isLiked={isLiked}/>
                 <Link href={`/thread/${id}`}>
                   <AiOutlineMessage
                     size={18}

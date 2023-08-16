@@ -49,14 +49,18 @@ export async function fetchPosts(pageNumber = 1, pageSize = 20) {
 }
 
 interface Params {
-  text: string,
-  author: string,
-  communityId: string | null,
-  path: string,
+  text: string;
+  author: string;
+  communityId: string | null;
+  path: string;
 }
 
-export async function createThread({ text, author, communityId, path }: Params
-) {
+export async function createThread({
+  text,
+  author,
+  communityId,
+  path,
+}: Params) {
   try {
     connectToDB();
 
@@ -236,5 +240,60 @@ export async function addCommentToThread(
   } catch (err) {
     console.error("Error while adding comment:", err);
     throw new Error("Unable to add comment");
+  }
+}
+
+export async function addLikeToThread(
+  threadId: string,
+  userId: string,
+  path: string
+) {
+  connectToDB();
+
+  try {
+    // Find the original thread by its ID
+    const thread = await Thread.findById(threadId);
+
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+
+    // Find the user by their unique id
+    const user = await User.findOne({ id: userId });
+
+    // Add the user's _id to the liked array in the community
+    const isLiked = await thread.likedUsers.includes(user._id);
+
+    if (isLiked) {
+      thread.likedUsers.pull(user._id);
+    } else {
+      thread.likedUsers.push(user._id);
+    }
+    await thread.save();
+
+    revalidatePath(path);
+  } catch (error) {
+    console.error("Error while adding like:", error);
+    throw new Error("Unable to add like");
+  }
+}
+
+export async function isThreadLikedByUser(threadId: string, userId: string) {
+  try {
+    const thread = await Thread.findById(threadId);
+
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+
+    // Find the user by their unique id
+    const user = await User.findOne({ id: userId });
+
+    const isLiked = await thread.likedUsers.includes(user._id);
+
+    return isLiked;
+  } catch (error) {
+    console.error("Error checking if thread is liked by user:", error);
+    throw new Error("Unable to check if thread is liked");
   }
 }
