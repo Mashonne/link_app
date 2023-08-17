@@ -278,7 +278,15 @@ export async function addLikeToThread(
   }
 }
 
-export async function isThreadLikedByUser(threadId: string, userId: string) {
+export async function isThreadLikedByUser(
+  threadId: string, 
+  userId: string
+) {
+  connectToDB();
+
+  console.log('THREADID=', threadId);
+  console.log('USERID=', userId);
+  
   try {
     const thread = await Thread.findById(threadId);
 
