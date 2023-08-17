@@ -46,7 +46,7 @@ const ThreadCard: React.FC<ThreadCardProps> = async ({
   isComment,
 }) => {
 
-  const isLiked = await isThreadLikedByUser(id, currentUserId);
+  // const isLiked = await isThreadLikedByUser(id, currentUserId);
 
   return (
     <article
@@ -79,7 +79,7 @@ const ThreadCard: React.FC<ThreadCardProps> = async ({
 
             <div className={`${isComment && "mb-10"} mt-5 flex flex-col gap-3`}>
               <div className="flex gap-3 5">
-                <LikeButton id={id} userId={currentUserId} isLiked={isLiked}/>
+                <LikeButton id={id} userId={currentUserId} isLiked={false}/>
                 <Link href={`/thread/${id}`}>
                   <AiOutlineMessage
                     size={18}
