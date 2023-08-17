@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { usePathname, useRouter } from "next/navigation";
 import { ChangeEvent, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Oval } from "react-loader-spinner";
 
 import {
   Form,
@@ -40,6 +41,7 @@ interface AccountProfileProps {
 const AccountProfile: React.FC<AccountProfileProps> = ({ user, btnTitle }) => {
   const router = useRouter();
   const pathname = usePathname();
+  const [loading, setLoading] = useState(false);
   const { startUpload } = useUploadThing("media");
 
   const [files, setFiles] = useState<File[]>([]);
@@ -53,8 +55,9 @@ const AccountProfile: React.FC<AccountProfileProps> = ({ user, btnTitle }) => {
       bio: user?.bio ? user.bio : "",
     },
   });
-
+ 
   const onSubmit = async (values: z.infer<typeof UserValidation>) => {
+    setLoading(true);
     const blob = values.profile_photo;
 
     const hasImageChanged = isBase64Image(blob);
@@ -76,8 +79,10 @@ const AccountProfile: React.FC<AccountProfileProps> = ({ user, btnTitle }) => {
     });
 
     if (pathname === "/profile/edit") {
+      setLoading(false);
       router.back();
     } else {
+      setLoading(false);
       router.push("/");
     }
   };
@@ -211,7 +216,22 @@ const AccountProfile: React.FC<AccountProfileProps> = ({ user, btnTitle }) => {
         />
 
         <Button type='submit' className='bg-primary-500'>
-          {btnTitle}
+        {loading ? (
+            <Oval
+              height={24}
+              width={24}
+              color="#ffffff"
+              wrapperStyle={{}}
+              wrapperClass="font-semibold"
+              visible={true}
+              ariaLabel="oval-loading"
+              secondaryColor="#ffffff"
+              strokeWidth={5}
+              strokeWidthSecondary={5}
+            />
+          ) : (
+            btnTitle
+          )}
         </Button>
       </form>
     </Form>

@@ -43,7 +43,7 @@ const PostThread: React.FC<PostThreadProps> = ({ userId }) => {
   const pathname = usePathname();
   const { organization } = useOrganization();
   const [loading, setLoading] = useState(false);
-
+ 
   const form = useForm({
     resolver: zodResolver(ThreadValidation),
     defaultValues: {
