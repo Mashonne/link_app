@@ -31,7 +31,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({
   return (
     <div onClick={onClick}>
       {liked ? (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           <AiFillHeart
               size={20}
               className="cursor-pointer text-red-500"
