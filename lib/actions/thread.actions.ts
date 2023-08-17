@@ -278,6 +278,25 @@ export async function addLikeToThread(
   }
 }
 
+export async function getLikesCount(threadId: string) {
+  connectToDB();
+
+  try {
+    const thread = await Thread.findById(threadId);
+
+    if (!thread) {
+      throw new Error("Thread not found");
+    }
+
+    const count = await thread.likedUsers.length;
+
+    return count;
+  } catch (error) {
+    console.error("Error while getting like count:", error);
+    throw new Error("Unable to get like count");
+  }
+}
+
 export async function isThreadLikedByUser(
   threadId: string, 
   userId: string
